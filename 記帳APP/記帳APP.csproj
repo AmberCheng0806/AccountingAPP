@@ -36,6 +36,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSV_Library">
+      <HintPath>..\..\CSV_Library\CSV_Library\bin\Debug\CSV_Library.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -57,6 +60,12 @@
       <DependentUpon>Navbar.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\FormType.cs" />
+    <Compile Include="Forms\ImgForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ImgForm.Designer.cs">
+      <DependentUpon>ImgForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SingletonFormFactory.cs" />
     <Compile Include="Forms\圖表分析.cs">
       <SubType>Form</SubType>
@@ -88,6 +97,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Components\Navbar.resx">
       <DependentUpon>Navbar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ImgForm.resx">
+      <DependentUpon>ImgForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\圖表分析.resx">
       <DependentUpon>圖表分析.cs</DependentUpon>

@@ -35,7 +35,7 @@ namespace 記帳APP.Components
 
 
             var types = Assembly.GetExecutingAssembly().GetTypes();
-            var typelist = types.Where(x => x.BaseType == typeof(Form))
+            var typelist = types.Where(x => x.BaseType == typeof(Form) && x.GetCustomAttribute<OrderAttribute>() != null)
                 .OrderBy(x =>
                 {
                     var attribute = x.GetCustomAttribute<OrderAttribute>();

@@ -32,6 +32,7 @@ namespace 記帳APP.Models
             Img2 = img2;
         }
 
+        public RecordModel() { }
 
     }
 }

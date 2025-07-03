@@ -61,6 +61,10 @@ namespace 記帳APP.Forms
 
         private void AddNewOne_Click(object sender, EventArgs e)
         {
+            //Entity Framework => 用LINQ 操作資料庫
+            //ORM(Object Relaction Mapping) => 使用物件導向的方式來操作/管理資料
+
+
             string date = dateTimePicker.Value.ToString("yyyy-MM-dd");
             string money = moneyBox1.Text;
             string type = typeCombo.Text.Trim();
@@ -71,26 +75,9 @@ namespace 記帳APP.Forms
             string imgPath2 = $"C:\\Users\\user\\source\\repos\\記帳APP\\記帳APP\\Img\\{Guid.NewGuid().ToString()}.jpg";
             pictureBox1.Image.Save(imgPath1);
             pictureBox2.Image.Save(imgPath2);
-            string record = $"{date},{money},{type},{people},{pay},{detail},{imgPath1},{imgPath2}";
-            StreamWriter streamWriter = new StreamWriter("C:\\Users\\user\\Desktop\\campaigns\\record.csv", true, Encoding.UTF8);
-            streamWriter.WriteLine(record);
-            streamWriter.Close();
+            RecordModel recordModel = new RecordModel(date, money, type, people, pay, detail, imgPath1, imgPath2);
+            CSV_Library.CSVHelper.Write<RecordModel>("C:\\Users\\user\\Desktop\\campaigns\\record.csv", recordModel);
 
-            StreamReader streamReader = new StreamReader("C:\\Users\\user\\Desktop\\campaigns\\record.csv");
-            List<RecordModel> records = new List<RecordModel>();
-            while (!streamReader.EndOfStream)
-            {
-                string line = streamReader.ReadLine();
-                string[] lines = line.Split(',');
-                RecordModel recordModel = new RecordModel(lines[0], lines[1], lines[2], lines[3], lines[4], lines[5], lines[6], lines[7]);
-                records.Add(recordModel);
-            }
-
-            foreach (RecordModel recordModel in records)
-            {
-                Console.WriteLine(recordModel.Pay);
-                Console.WriteLine(recordModel.Money);
-            }
         }
     }
 }
