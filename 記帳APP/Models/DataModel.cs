@@ -10,7 +10,7 @@ namespace 記帳APP.Models
     {
         public static List<string> Type = new List<string>() { "食", "衣", "住", "行", "樂" };
         public static List<string> People = new List<string>() { "家人", "朋友", "自己", "同事" };
-        public static List<string> PaymentType = new List<string>() { "現金", "信用卡", "line pay" };
+        public static List<string> Pay = new List<string>() { "現金", "信用卡", "line pay" };
         public static List<string> food = new List<string>() { "正餐", "甜點", "飲料" };
         public static List<string> cloth = new List<string>() { "上衣", "下身", "配飾" };
         public static List<string> living = new List<string>() { "房租", "水電" };

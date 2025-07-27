@@ -28,19 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.userControl11 = new 記帳APP.Components.Navbar();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView = new System.Windows.Forms.DataGridView();
+            this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerEnd = new System.Windows.Forms.DateTimePicker();
+            this.userControl11 = new 記帳APP.Components.Navbar();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView)).BeginInit();
             this.SuspendLayout();
-            // 
-            // userControl11
-            // 
-            this.userControl11.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.userControl11.Location = new System.Drawing.Point(0, 742);
-            this.userControl11.Name = "userControl11";
-            this.userControl11.Size = new System.Drawing.Size(1178, 102);
-            this.userControl11.TabIndex = 1;
             // 
             // button1
             // 
@@ -50,7 +44,7 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "查詢";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.searchBtn_Click);
             // 
             // dataGridView
             // 
@@ -63,11 +57,37 @@
             this.dataGridView.TabIndex = 4;
             this.dataGridView.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellContentDoubleClick);
             // 
+            // dateTimePicker
+            // 
+            this.dateTimePicker.Location = new System.Drawing.Point(56, 35);
+            this.dateTimePicker.Name = "dateTimePicker";
+            this.dateTimePicker.Size = new System.Drawing.Size(200, 29);
+            this.dateTimePicker.TabIndex = 5;
+            this.dateTimePicker.ValueChanged += new System.EventHandler(this.dateTimePicker_ValueChangd);
+            // 
+            // dateTimePickerEnd
+            // 
+            this.dateTimePickerEnd.Location = new System.Drawing.Point(351, 35);
+            this.dateTimePickerEnd.Name = "dateTimePickerEnd";
+            this.dateTimePickerEnd.Size = new System.Drawing.Size(200, 29);
+            this.dateTimePickerEnd.TabIndex = 5;
+            this.dateTimePickerEnd.ValueChanged += new System.EventHandler(this.dateTimePicker_ValueChangd);
+            // 
+            // userControl11
+            // 
+            this.userControl11.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.userControl11.Location = new System.Drawing.Point(0, 742);
+            this.userControl11.Name = "userControl11";
+            this.userControl11.Size = new System.Drawing.Size(1178, 102);
+            this.userControl11.TabIndex = 1;
+            // 
             // 記帳本
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1178, 844);
+            this.Controls.Add(this.dateTimePickerEnd);
+            this.Controls.Add(this.dateTimePicker);
             this.Controls.Add(this.dataGridView);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.userControl11);
@@ -84,5 +104,7 @@
         private Components.Navbar userControl11;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.DataGridView dataGridView;
+        private System.Windows.Forms.DateTimePicker dateTimePicker;
+        private System.Windows.Forms.DateTimePicker dateTimePickerEnd;
     }
 }

@@ -40,6 +40,7 @@
       <HintPath>..\..\CSV_Library\CSV_Library\bin\Debug\CSV_Library.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -52,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ComboBoxColumnAttribute.cs" />
+    <Compile Include="Attributes\ImgColumnAttribute.cs" />
     <Compile Include="Attributes\OrderAttribute.cs" />
     <Compile Include="Components\Navbar.cs">
       <SubType>UserControl</SubType>
@@ -95,6 +98,8 @@
     <Compile Include="Models\RecordModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\Extension.cs" />
+    <Compile Include="Util\Student.cs" />
     <EmbeddedResource Include="Components\Navbar.resx">
       <DependentUpon>Navbar.cs</DependentUpon>
     </EmbeddedResource>
@@ -137,7 +142,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Img\" />
+    <Folder Include="Repository\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Img\trash.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
