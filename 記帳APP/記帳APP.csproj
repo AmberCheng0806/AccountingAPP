@@ -36,6 +36,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="CSV_Library">
       <HintPath>..\..\CSV_Library\CSV_Library\bin\Debug\CSV_Library.dll</HintPath>
     </Reference>
@@ -62,6 +65,8 @@
     <Compile Include="Components\Navbar.Designer.cs">
       <DependentUpon>Navbar.cs</DependentUpon>
     </Compile>
+    <Compile Include="Contract\AddRecordContract.cs" />
+    <Compile Include="Contract\LedgerContract.cs" />
     <Compile Include="Forms\FormType.cs" />
     <Compile Include="Forms\ImgForm.cs">
       <SubType>Form</SubType>
@@ -95,11 +100,20 @@
       <DependentUpon>記帳本.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\DataModel.cs" />
+    <Compile Include="Models\DTOs\DataDto.cs" />
+    <Compile Include="Models\DTOs\RecordDto.cs" />
     <Compile Include="Models\RecordModel.cs" />
+    <Compile Include="Presenter\AddRecordPresenter.cs" />
+    <Compile Include="Presenter\LedgerPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\DataRepository.cs" />
+    <Compile Include="Repository\IDataRepository.cs" />
+    <Compile Include="Repository\IRecordRepository.cs" />
+    <Compile Include="Repository\RecordRepository.cs" />
     <Compile Include="Util\Extension.cs" />
-    <Compile Include="Util\Student.cs" />
+    <Compile Include="Util\ImgCompress.cs" />
+    <Compile Include="Util\Mapper.cs" />
     <EmbeddedResource Include="Components\Navbar.resx">
       <DependentUpon>Navbar.cs</DependentUpon>
     </EmbeddedResource>
@@ -128,6 +142,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <None Include="app.manifest" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -141,9 +156,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Repository\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Img\trash.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

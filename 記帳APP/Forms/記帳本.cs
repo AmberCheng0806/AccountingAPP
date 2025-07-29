@@ -13,20 +13,24 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using 記帳APP.Attributes;
 using 記帳APP.Models;
+using 記帳APP.Presenter;
 using 記帳APP.Util;
+using static 記帳APP.Contract.LedgerContract;
 
 namespace 記帳APP.Forms
 {
     [DisplayName("記帳本2")]
     [Order(2)]
-    public partial class 記帳本 : Form
+    public partial class 記帳本 : Form, ILedgerView
     {
         List<RecordModel> records = new List<RecordModel>();
         Queue<Bitmap> bitmaps = new Queue<Bitmap>();
+        ILedgerPresenter ledgerPresenter;
 
         public 記帳本()
         {
             InitializeComponent();
+            ledgerPresenter = new LedgerPresenter(this);
             //直行(Column)橫列(Row)
             //DataGridTextBoxColumn (單一欄位)
             //DataGridTextBoxCell (單一欄位下的儲存格)
@@ -37,8 +41,9 @@ namespace 記帳APP.Forms
         {
             this.Debounce(() =>
             {
-                ChangeRecordsByDate();
-                Reload();
+                //ChangeRecordsByDate();
+                //RenderDatas();
+                ledgerPresenter.SearchByDate(dateTimePicker.Value, dateTimePickerEnd.Value);
             }, 400);
         }
         void dataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
@@ -58,12 +63,15 @@ namespace 記帳APP.Forms
                 detailCell.DataSource = types;
                 detailCell.Value = types[0];
             }
-            Reload();
-            string date = records[e.RowIndex].Date;
-            string FilePath = ConfigurationManager.AppSettings["FilePath"];
-            string path = Path.Combine(FilePath, $"{date}\\record.csv");
-            File.Delete(path);
-            CSV_Library.CSVHelper.Write<RecordModel>(path, records);
+
+            ledgerPresenter.UpdateData(records[e.RowIndex]);
+
+            //RenderDatas();
+            //string date = records[e.RowIndex].Date;
+            //string FilePath = ConfigurationManager.AppSettings["FilePath"];
+            //string path = Path.Combine(FilePath, $"{date}\\record.csv");
+            //File.Delete(path);
+            //CSV_Library.CSVHelper.Write<RecordModel>(path, records);
         }
 
         private void dataGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -81,33 +89,33 @@ namespace 記帳APP.Forms
                 {
                     return;
                 }
-                string img1 = records[e.RowIndex].Img1;
-                string img2 = records[e.RowIndex].Img2;
-                string date = records[e.RowIndex].Date;
+                //string img1 = records[e.RowIndex].Img1;
+                //string img2 = records[e.RowIndex].Img2;
+                //string date = records[e.RowIndex].Date;
                 var temp = dataGridView.Rows[e.RowIndex].Cells.OfType<DataGridViewImageCell>().Where(x => x.Value != null).ToList();
                 temp.ForEach(x =>
                 {
                     var t = x.Value;
                     ((Bitmap)t).Dispose();
                 });
-                records.RemoveAt(e.RowIndex);
+                //records.RemoveAt(e.RowIndex);
                 dataGridView.DataSource = null;
                 dataGridView.Columns.Clear();
                 GC.Collect();
-                File.Delete(img1);
-                File.Delete(img2);
-                string FilePath = ConfigurationManager.AppSettings["FilePath"];
-                string path = Path.Combine(FilePath, $"{date}\\record.csv");
-                File.Delete(path);
-                List<RecordModel> recordForDeleteDate = records.Where(x => x.Date == date).ToList();
-                CSV_Library.CSVHelper.Write<RecordModel>(path, recordForDeleteDate);
-                Reload();
+                ledgerPresenter.DeleteData(records[e.RowIndex]);
+                //File.Delete(img1);
+                //File.Delete(img2);
+                //string FilePath = ConfigurationManager.AppSettings["FilePath"];
+                //string path = Path.Combine(FilePath, $"{date}\\record.csv");
+                //File.Delete(path);
+                //List<RecordModel> recordForDeleteDate = records.Where(x => x.Date == date).ToList();
+                //CSV_Library.CSVHelper.Write<RecordModel>(path, recordForDeleteDate);
+                //RenderDatas();
             }
         }
 
-        private void Reload()
+        public void RenderDatas(List<RecordModel> records)
         {
-
             dataGridView.CellValueChanged -= dataGridView_CellValueChanged;
             dataGridView.CurrentCellDirtyStateChanged -= dataGridView_CurrentCellDirtyStateChanged;
 
@@ -129,6 +137,7 @@ namespace 記帳APP.Forms
                     continue;
                 if (attribute is ComboBoxColumnAttribute)
                 {
+                    //dataGridView.CreateComboxColumn(prop)
                     DataGridViewComboBoxColumn ComboBoxColumn = new DataGridViewComboBoxColumn();
                     ComboBoxColumn.HeaderText = prop.Name;
                     ComboBoxColumn.DataPropertyName = prop.Name;
@@ -152,37 +161,17 @@ namespace 記帳APP.Forms
                     dataGridView.Columns.Insert(index, imgColumn);
                     dataGridView.Columns[prop.Name].Visible = false;
                 }
-
             }
 
             DataGridViewImageColumn delete = new DataGridViewImageColumn();
             delete.HeaderText = "Delete";
             delete.Name = "Delete";
             delete.ImageLayout = DataGridViewImageCellLayout.Zoom;
-            delete.DefaultCellStyle.NullValue = new Bitmap(@"Img/trash.jpg");
+            Bitmap trash = new Bitmap(@"Img/trash.jpg");
+            delete.DefaultCellStyle.NullValue = trash;
+            bitmaps.Enqueue(trash);
             dataGridView.Columns.Add(delete);
 
-            //for (int i = 0; i < dataGridView.Rows.Count; i++)
-            //{
-            //    detail Datasource
-            //    int TypeIndex = dataGridView.Columns["Type"].Index;
-            //    var types = DataModel.keyValuePairs[dataGridView.Rows[i].Cells[TypeIndex].Value.ToString()];
-            //    int DetailComboIndex = dataGridView.Columns["Detail"].Index - 1;
-            //    DataGridViewComboBoxCell detailCell = (DataGridViewComboBoxCell)dataGridView.Rows[i].Cells[DetailComboIndex];
-            //    detailCell.DataSource = types;
-
-            //    img path:去掉imgagecolumn用反射
-            //    int imgIndex = dataGridView.Columns["Img1"].Index;
-            //    Bitmap bitmap = new Bitmap(dataGridView.Rows[i].Cells[imgIndex].Value.ToString());
-            //    bitmaps.Enqueue(bitmap);
-            //    dataGridView.Rows[i].Cells[imgIndex - 1].Value = bitmap;
-            //    int imgIndex2 = dataGridView.Columns["Img2"].Index;
-            //    Bitmap bitmap2 = new Bitmap(dataGridView.Rows[i].Cells[imgIndex2].Value.ToString());
-            //    bitmaps.Enqueue(bitmap2);
-            //    dataGridView.Rows[i].Cells[imgIndex2 - 1].Value = bitmap2;
-            //}
-
-            //
             for (int i = 0; i < dataGridView.Rows.Count; i++)
             {
                 var record = records[i];
@@ -209,33 +198,29 @@ namespace 記帳APP.Forms
             dataGridView.CurrentCellDirtyStateChanged += dataGridView_CurrentCellDirtyStateChanged;
         }
 
-        private void dateTimePicker_ValueChangd(object sender, EventArgs e)
-        {
-            ChangeRecordsByDate();
-        }
 
         private void ChangeRecordsByDate()
         {
-            records.Clear();
-            if (dateTimePicker.Value.Date > dateTimePickerEnd.Value.Date)
-            {
-                MessageBox.Show("開始日期不能大於結束日期", "系統通知");
-                return;
-            }
-            TimeSpan timeSpan = dateTimePickerEnd.Value - dateTimePicker.Value;
-            //dateTimePicker.Value.AddDays(timeSpan.Days);
-            for (int i = 0; i <= timeSpan.Days; i++)
-            {
-                string date = dateTimePicker.Value.AddDays(i).ToString("yyyy-MM-dd");
-                string FilePath = ConfigurationManager.AppSettings["FilePath"];
-                string path = Path.Combine(FilePath, $"{date}\\record.csv");
-                if (!File.Exists(path))
-                {
-                    continue;
-                }
-                List<RecordModel> recordByDay = CSV_Library.CSVHelper.Read<RecordModel>(path);
-                records.AddRange(recordByDay);
-            }
+            //records.Clear();
+            //if (dateTimePicker.Value.Date > dateTimePickerEnd.Value.Date)
+            //{
+            //    MessageBox.Show("開始日期不能大於結束日期", "系統通知");
+            //    return;
+            //}
+            //TimeSpan timeSpan = dateTimePickerEnd.Value - dateTimePicker.Value;
+            ////dateTimePicker.Value.AddDays(timeSpan.Days);
+            //for (int i = 0; i <= timeSpan.Days; i++)
+            //{
+            //    string date = dateTimePicker.Value.AddDays(i).ToString("yyyy-MM-dd");
+            //    string FilePath = ConfigurationManager.AppSettings["FilePath"];
+            //    string path = Path.Combine(FilePath, $"{date}\\record.csv");
+            //    if (!File.Exists(path))
+            //    {
+            //        continue;
+            //    }
+            //    List<RecordModel> recordByDay = CSV_Library.CSVHelper.Read<RecordModel>(path);
+            //    records.AddRange(recordByDay);
+            //}
         }
 
     }

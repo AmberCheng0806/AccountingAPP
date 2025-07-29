@@ -63,7 +63,6 @@
             this.dateTimePicker.Name = "dateTimePicker";
             this.dateTimePicker.Size = new System.Drawing.Size(200, 29);
             this.dateTimePicker.TabIndex = 5;
-            this.dateTimePicker.ValueChanged += new System.EventHandler(this.dateTimePicker_ValueChangd);
             // 
             // dateTimePickerEnd
             // 
@@ -71,7 +70,6 @@
             this.dateTimePickerEnd.Name = "dateTimePickerEnd";
             this.dateTimePickerEnd.Size = new System.Drawing.Size(200, 29);
             this.dateTimePickerEnd.TabIndex = 5;
-            this.dateTimePickerEnd.ValueChanged += new System.EventHandler(this.dateTimePicker_ValueChangd);
             // 
             // userControl11
             // 

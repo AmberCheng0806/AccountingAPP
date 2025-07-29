@@ -9,7 +9,7 @@ using 記帳APP.Attributes;
 
 namespace 記帳APP.Models
 {
-    internal class RecordModel
+    public class RecordModel
     {
         [DisplayName("日期")]
         public string Date { get; set; }
