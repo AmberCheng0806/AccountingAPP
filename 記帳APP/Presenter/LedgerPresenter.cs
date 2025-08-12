@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using 記帳APP.Models;
+using 記帳APP.Models.DTOs;
 using 記帳APP.Repository;
+using 記帳APP.Repository.Entities;
 using static 記帳APP.Contract.LedgerContract;
 
 namespace 記帳APP.Presenter
@@ -21,21 +24,51 @@ namespace 記帳APP.Presenter
             record = new RecordRepository();
         }
 
-        public void DeleteData(RecordModel recordModel)
+        public void DeleteData(RecordDTO recordDto)
         {
-            List<RecordModel> recordModels = record.Delete(recordModel);
-            view.RenderDatas(recordModels);
+            RecordEntity entity = Util.Mapper.Map<RecordDTO, RecordEntity>(recordDto, x =>
+            {
+                x.ForMember(z => z.Img1, y => y.MapFrom(o => o.imgPath1));
+                x.ForMember(z => z.Img2, y => y.MapFrom(o => o.imgPath2));
+            });
+            record.Delete(entity);
+        }
+
+        public List<string> GetDetailList(string type)
+        {
+            return data.GetDetails(type);
+        }
+
+        public void GetDetailResponse(string type)
+        {
+            List<string> details = data.GetDetails(type);
+            view.DetailResponse(details);
+        }
+
+        public PropertyInfo[] GetRecordProperties()
+        {
+            return typeof(RecordModel).GetProperties();
         }
 
         public void SearchByDate(DateTime start, DateTime end)
         {
-            List<RecordModel> records = record.GetDatas(start, end);
-            view.RenderDatas(records);
+            List<RecordEntity> records = record.GetDatas(start, end);
+            List<RecordDTO> dtos = Util.Mapper.Map<RecordEntity, RecordDTO>(records, x =>
+            {
+                x.ForMember(z => z.imgPath1, y => y.MapFrom(o => o.Img1));
+                x.ForMember(z => z.imgPath2, y => y.MapFrom(o => o.Img2));
+            }).ToList();
+            view.RenderDatas(dtos);
         }
 
-        public void UpdateData(RecordModel recordModel)
+        public void UpdateData(RecordDTO recordDto)
         {
-            record.Update(recordModel);
+            RecordEntity entity = Util.Mapper.Map<RecordDTO, RecordEntity>(recordDto, x =>
+            {
+                x.ForMember(z => z.Img1, y => y.MapFrom(o => o.imgPath1));
+                x.ForMember(z => z.Img2, y => y.MapFrom(o => o.imgPath2));
+            });
+            record.Update(entity);
         }
 
 

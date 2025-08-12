@@ -40,18 +40,39 @@ namespace 記帳APP.Util
     //}
 
 
+
     internal static class Mapper
     {
+
+        private static void Test()
+        {
+            List<DataModel> list = new List<DataModel>();
+            var temp = Mapper.Map<DataModel, DataDTO>(list);
+        }
+
         public static T2 Map<T1, T2>(T1 source, Action<IMappingExpression<T1, T2>> action = null)
         {
             var config = new MapperConfiguration(cfg =>
-                {
-                    var mappingExpression = cfg.CreateMap<T1, T2>();
-                    action?.Invoke(mappingExpression);
-                }
+            {
+                var mappingExpression = cfg.CreateMap<T1, T2>();
+                action?.Invoke(mappingExpression);
+            }
             );
-            var mapper2 = config.CreateMapper();
-            return mapper2.Map<T1, T2>(source);
+            var mapper = config.CreateMapper();
+            return mapper.Map<T1, T2>(source);
+        }
+
+        public static IEnumerable<T2> Map<T1, T2>(IEnumerable<T1> sources,
+        Action<IMappingExpression<T1, T2>> action = null)
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                var mappingExpression = cfg.CreateMap<T1, T2>();
+                action?.Invoke(mappingExpression);
+            }
+            );
+            var mapper = config.CreateMapper();
+            return mapper.Map<IEnumerable<T1>, IEnumerable<T2>>(sources);
         }
     }
 }

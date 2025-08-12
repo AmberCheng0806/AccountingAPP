@@ -12,7 +12,7 @@ namespace 記帳APP.Contract
     {
         public interface IAddRecordView
         {
-            void ComboboxResponse(DataDto dataDto);
+            void ComboboxResponse(DataDTO dataDto);
             void DetailResponse(List<string> detail);
             void Initialize();
         }
@@ -21,7 +21,7 @@ namespace 記帳APP.Contract
         {
             void GetComboboxList();
             void GetDetailResponse(string type);
-            void AddRecord(RecordDto recordDto);
+            void AddRecord(RecordDTO recordDto);
             void CompressImg(Image image, string originPath, string path);
         }
     }

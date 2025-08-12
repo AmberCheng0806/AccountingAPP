@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace 記帳APP.Models.DTOs
 {
-    public class RecordDto
+    public class RecordDTO
     {
         public string date { get; set; }
         public string money { get; set; }
@@ -19,7 +19,7 @@ namespace 記帳APP.Models.DTOs
         public string detail { get; set; }
         public string imgPath1 { get; set; }
         public string imgPath2 { get; set; }
-        public RecordDto(string date, string money, string type, string people, string pay, string detail, string imgPath1, string imgPath2)
+        public RecordDTO(string date, string money, string type, string people, string pay, string detail, string imgPath1, string imgPath2)
         {
             this.date = date;
             this.money = money;
@@ -30,5 +30,7 @@ namespace 記帳APP.Models.DTOs
             this.imgPath1 = imgPath1;
             this.imgPath2 = imgPath2;
         }
+
+        public RecordDTO() { }
     }
 }

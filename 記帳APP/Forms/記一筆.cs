@@ -37,14 +37,14 @@ namespace 記帳APP.Forms
             typeCombo.SelectedIndex = 0;
             peopleCombo.SelectedIndex = 0;
             payCombo.SelectedIndex = 0;
-            string path = "D:\\photo\\circle-upload-icon-button-isolated-on-white-background-vector.jpg";
+            string path = "Img/upload.jpg";
             pictureBox1.Image = Image.FromFile(path);
             pictureBox1.Tag = path;
             pictureBox2.Image = Image.FromFile(path);
             pictureBox2.Tag = path;
         }
 
-        public void ComboboxResponse(DataDto dataDto)
+        public void ComboboxResponse(DataDTO dataDto)
         {
             typeCombo.DataSource = dataDto.types;
             detailCombo.DataSource = dataDto.details;
@@ -57,20 +57,10 @@ namespace 記帳APP.Forms
             detailCombo.DataSource = detail;
         }
 
-        private void 記一筆_Load(object sender, EventArgs e)
-        {
-            //typeCombo.DataSource = DataModel.Type;
-            //detailCombo.DataSource = DataModel.keyValuePairs["食"];
-            //peopleCombo.DataSource = DataModel.People;
-            //payCombo.DataSource = DataModel.Pay;
-
-        }
-
         private void typeCombo_SelectedIndexChanged(object sender, EventArgs e)
         {
             string type = typeCombo.Text;
             presenter.GetDetailResponse(type);
-            //detailCombo.DataSource = DataModel.keyValuePairs[type];
         }
 
         private void ImageUpload_Click(object sender, EventArgs e)
@@ -108,7 +98,7 @@ namespace 記帳APP.Forms
 
                 presenter.CompressImg(pictureBox1.Image, pictureBox1.Tag.ToString(), imgPath1);
                 presenter.CompressImg(pictureBox2.Image, pictureBox2.Tag.ToString(), imgPath2);
-                presenter.AddRecord(new RecordDto(date, money, type, people, pay, detail, imgPath1, imgPath2));
+                presenter.AddRecord(new RecordDTO(date, money, type, people, pay, detail, imgPath1, imgPath2));
             }, 400);
         }
 

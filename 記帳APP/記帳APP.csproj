@@ -100,17 +100,19 @@
       <DependentUpon>記帳本.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\DataModel.cs" />
-    <Compile Include="Models\DTOs\DataDto.cs" />
-    <Compile Include="Models\DTOs\RecordDto.cs" />
+    <Compile Include="Models\DTOs\DataDTO.cs" />
+    <Compile Include="Models\DTOs\RecordDTO.cs" />
     <Compile Include="Models\RecordModel.cs" />
     <Compile Include="Presenter\AddRecordPresenter.cs" />
     <Compile Include="Presenter\LedgerPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\DataRepository.cs" />
+    <Compile Include="Repository\Entities\RecordEntity.cs" />
     <Compile Include="Repository\IDataRepository.cs" />
     <Compile Include="Repository\IRecordRepository.cs" />
     <Compile Include="Repository\RecordRepository.cs" />
+    <Compile Include="Util\DataGridViewExtension.cs" />
     <Compile Include="Util\Extension.cs" />
     <Compile Include="Util\ImgCompress.cs" />
     <Compile Include="Util\Mapper.cs" />
@@ -159,6 +161,9 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="Img\trash.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Img\upload.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

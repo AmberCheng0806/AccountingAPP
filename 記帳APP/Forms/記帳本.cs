@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
@@ -13,17 +15,18 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using 記帳APP.Attributes;
 using 記帳APP.Models;
+using 記帳APP.Models.DTOs;
 using 記帳APP.Presenter;
+using 記帳APP.Repository.Entities;
 using 記帳APP.Util;
 using static 記帳APP.Contract.LedgerContract;
-
 namespace 記帳APP.Forms
 {
     [DisplayName("記帳本2")]
     [Order(2)]
     public partial class 記帳本 : Form, ILedgerView
     {
-        List<RecordModel> records = new List<RecordModel>();
+        BindingList<RecordModel> records = new BindingList<RecordModel>();
         Queue<Bitmap> bitmaps = new Queue<Bitmap>();
         ILedgerPresenter ledgerPresenter;
 
@@ -31,6 +34,8 @@ namespace 記帳APP.Forms
         {
             InitializeComponent();
             ledgerPresenter = new LedgerPresenter(this);
+            dataGridView.AllowUserToAddRows = false;
+
             //直行(Column)橫列(Row)
             //DataGridTextBoxColumn (單一欄位)
             //DataGridTextBoxCell (單一欄位下的儲存格)
@@ -41,9 +46,7 @@ namespace 記帳APP.Forms
         {
             this.Debounce(() =>
             {
-                //ChangeRecordsByDate();
-                //RenderDatas();
-                ledgerPresenter.SearchByDate(dateTimePicker.Value, dateTimePickerEnd.Value);
+                ledgerPresenter.SearchByDate(dateTimePicker.Value.Date, dateTimePickerEnd.Value);
             }, 400);
         }
         void dataGridView_CurrentCellDirtyStateChanged(object sender, EventArgs e)
@@ -58,64 +61,71 @@ namespace 記帳APP.Forms
         {
             if (dataGridView.CurrentCell.ColumnIndex == dataGridView.Columns["TypeCombo"].Index && dataGridView.CurrentCell is DataGridViewComboBoxCell comboBoxCell)
             {
-                var types = DataModel.keyValuePairs[comboBoxCell.Value.ToString()];
-                DataGridViewComboBoxCell detailCell = (DataGridViewComboBoxCell)dataGridView.Rows[e.RowIndex].Cells[dataGridView.Columns["DetailCombo"].Index];
-                detailCell.DataSource = types;
-                detailCell.Value = types[0];
+                ledgerPresenter.GetDetailResponse(comboBoxCell.Value.ToString());
             }
-
-            ledgerPresenter.UpdateData(records[e.RowIndex]);
-
-            //RenderDatas();
-            //string date = records[e.RowIndex].Date;
-            //string FilePath = ConfigurationManager.AppSettings["FilePath"];
-            //string path = Path.Combine(FilePath, $"{date}\\record.csv");
-            //File.Delete(path);
-            //CSV_Library.CSVHelper.Write<RecordModel>(path, records);
+            RecordDTO dto = Util.Mapper.Map<RecordModel, RecordDTO>(records[e.RowIndex], x =>
+            {
+                x.ForMember(z => z.imgPath1, y => y.MapFrom(o => o.Img1));
+                x.ForMember(z => z.imgPath2, y => y.MapFrom(o => o.Img2));
+            });
+            ledgerPresenter.UpdateData(dto);
         }
-
+        public void DetailResponse(List<string> detail)
+        {
+            int row = dataGridView.CurrentCell.RowIndex;
+            DataGridViewComboBoxCell detailCell = (DataGridViewComboBoxCell)dataGridView.Rows[row].Cells[dataGridView.Columns["DetailCombo"].Index];
+            detailCell.DataSource = detail;
+            detailCell.Value = detail[0];
+        }
         private void dataGridView_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.ColumnIndex == dataGridView.Columns["Img1ImageColumn"].Index || e.ColumnIndex == dataGridView.Columns["Img2ImageColumn"].Index)
-            {
-                string path = dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex + 1].Value.ToString();
-                ImgForm form = new ImgForm(path.Replace("40x40", ""));
-                form.Show();
-            }
+
             if (e.ColumnIndex == dataGridView.Columns["Delete"].Index)
             {
                 DialogResult result = MessageBox.Show("確認刪除", "系統通知", MessageBoxButtons.YesNo);
                 if (result == DialogResult.No)
-                {
                     return;
-                }
-                //string img1 = records[e.RowIndex].Img1;
-                //string img2 = records[e.RowIndex].Img2;
-                //string date = records[e.RowIndex].Date;
-                var temp = dataGridView.Rows[e.RowIndex].Cells.OfType<DataGridViewImageCell>().Where(x => x.Value != null).ToList();
-                temp.ForEach(x =>
+                dataGridView.Rows[e.RowIndex].Cells
+                   .OfType<DataGridViewImageCell>()
+                   .Where(x => x.Value != null)
+                   .ToList()
+                   .ForEach(x =>
+                    {
+                        var t = x.Value;
+                        ((Bitmap)t).Dispose();
+                        x.Dispose();
+                    });
+
+                var record = records[e.RowIndex];
+                dataGridView.Rows.RemoveAt(e.RowIndex);
+
+
+                RecordDTO dto = Mapper.Map<RecordModel, RecordDTO>(record, x =>
                 {
-                    var t = x.Value;
-                    ((Bitmap)t).Dispose();
+                    x.ForMember(z => z.imgPath1, y => y.MapFrom(o => o.Img1));
+                    x.ForMember(z => z.imgPath2, y => y.MapFrom(o => o.Img2));
                 });
-                //records.RemoveAt(e.RowIndex);
-                dataGridView.DataSource = null;
-                dataGridView.Columns.Clear();
-                GC.Collect();
-                ledgerPresenter.DeleteData(records[e.RowIndex]);
-                //File.Delete(img1);
-                //File.Delete(img2);
-                //string FilePath = ConfigurationManager.AppSettings["FilePath"];
-                //string path = Path.Combine(FilePath, $"{date}\\record.csv");
-                //File.Delete(path);
-                //List<RecordModel> recordForDeleteDate = records.Where(x => x.Date == date).ToList();
-                //CSV_Library.CSVHelper.Write<RecordModel>(path, recordForDeleteDate);
-                //RenderDatas();
+                ledgerPresenter.DeleteData(dto);
+                return;
+
+            }
+
+            if (dataGridView.Rows[e.RowIndex].Cells[e.ColumnIndex] is DataGridViewImageCell imageCell)
+            {
+                string path = imageCell.Tag.ToString();
+                ImgForm form = new ImgForm(path);
+                form.Show();
             }
         }
 
-        public void RenderDatas(List<RecordModel> records)
+        public void RenderDatas(List<RecordDTO> dtos)
         {
+            List<RecordModel> records = Mapper.Map<RecordDTO, RecordModel>(dtos, x =>
+            {
+                x.ForMember(z => z.Img1, y => y.MapFrom(o => o.imgPath1));
+                x.ForMember(z => z.Img2, y => y.MapFrom(o => o.imgPath2));
+            }).ToList();
+            this.records = new BindingList<RecordModel>(records);
             dataGridView.CellValueChanged -= dataGridView_CellValueChanged;
             dataGridView.CurrentCellDirtyStateChanged -= dataGridView_CurrentCellDirtyStateChanged;
 
@@ -127,8 +137,9 @@ namespace 記帳APP.Forms
             dataGridView.DataSource = null;
             dataGridView.Columns.Clear();
             GC.Collect();
-            dataGridView.DataSource = records; // 透過反射將每一筆資料創建欄位
+            dataGridView.DataSource = this.records; // 透過反射將每一筆資料創建欄位
             dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
 
             foreach (var prop in typeof(RecordModel).GetProperties())
             {
@@ -137,47 +148,32 @@ namespace 記帳APP.Forms
                     continue;
                 if (attribute is ComboBoxColumnAttribute)
                 {
-                    //dataGridView.CreateComboxColumn(prop)
-                    DataGridViewComboBoxColumn ComboBoxColumn = new DataGridViewComboBoxColumn();
-                    ComboBoxColumn.HeaderText = prop.Name;
-                    ComboBoxColumn.DataPropertyName = prop.Name;
-                    ComboBoxColumn.Name = prop.Name + "Combo";
-                    ComboBoxColumn.Tag = prop.Name;
-                    ComboBoxColumn.DataSource = prop.Name == "Detail" ?
-                        null : typeof(DataModel).GetField(prop.Name, BindingFlags.Public | BindingFlags.Static).GetValue(null);
-                    int index = dataGridView.Columns[prop.Name].Index;
-                    dataGridView.Columns.Insert(index, ComboBoxColumn);
-                    dataGridView.Columns[prop.Name].Visible = false;
+                    dataGridView.CreateComboBoxColumn(prop);
                 }
                 if (attribute is ImgColumnAttribute)
                 {
-                    DataGridViewImageColumn imgColumn = new DataGridViewImageColumn();
-                    imgColumn.HeaderText = prop.Name;
-                    imgColumn.Name = prop.Name + "ImageColumn";
-                    imgColumn.ImageLayout = DataGridViewImageCellLayout.Zoom;
-                    imgColumn.Tag = prop.Name;
-                    //imgColumn.DefaultCellStyle
-                    int index = dataGridView.Columns[prop.Name].Index;
-                    dataGridView.Columns.Insert(index, imgColumn);
-                    dataGridView.Columns[prop.Name].Visible = false;
+                    dataGridView.CreateImageColumn(prop);
                 }
             }
 
-            DataGridViewImageColumn delete = new DataGridViewImageColumn();
-            delete.HeaderText = "Delete";
-            delete.Name = "Delete";
-            delete.ImageLayout = DataGridViewImageCellLayout.Zoom;
+            DataGridViewImageColumn delete = new DataGridViewImageColumn()
+            {
+                HeaderText = "Delete",
+                Name = "Delete",
+                ImageLayout = DataGridViewImageCellLayout.Zoom
+            };
             Bitmap trash = new Bitmap(@"Img/trash.jpg");
             delete.DefaultCellStyle.NullValue = trash;
             bitmaps.Enqueue(trash);
             dataGridView.Columns.Add(delete);
 
-            for (int i = 0; i < dataGridView.Rows.Count; i++)
+
+            for (int i = 0; i < this.records.Count; i++)
             {
-                var record = records[i];
-                //detail Datasource
+                var record = this.records[i];
                 int DetailComboIndex = dataGridView.Columns["DetailCombo"].Index;
-                var types = DataModel.keyValuePairs[record.Type];
+
+                var types = ledgerPresenter.GetDetailList(record.Type);
                 DataGridViewComboBoxCell detailCell = (DataGridViewComboBoxCell)dataGridView.Rows[i].Cells[DetailComboIndex];
                 detailCell.DataSource = types;
 
@@ -188,39 +184,21 @@ namespace 記帳APP.Forms
                                     .ForEach(y =>
                                     {
                                         string columnName = y.OwningColumn.Tag.ToString();
-                                        string value = dataGridView.Rows[i].Cells[columnName].Value.ToString();
-                                        Bitmap bitmap = new Bitmap(value);
-                                        y.Value = bitmap;
-                                        bitmaps.Enqueue(bitmap);
+                                        string imagePath = dataGridView.Rows[i].Cells[columnName].Value.ToString();
+                                        string originImgPath = imagePath.Replace("40x40", "");
+                                        y.Tag = originImgPath;
+                                        byte[] bytes = File.ReadAllBytes(imagePath);
+                                        using (MemoryStream ms = new MemoryStream(bytes))
+                                        {
+                                            Bitmap bitmap = new Bitmap(ms); // 不再鎖住硬碟上的圖片檔案
+                                            y.Value = new Bitmap(bitmap);   // 複製一份給 DataGridView，避免 MemoryStream 被釋放後還用到
+                                            //bitmaps.Enqueue(bitmap);
+                                        }
+
                                     });
             }
             dataGridView.CellValueChanged += dataGridView_CellValueChanged;
             dataGridView.CurrentCellDirtyStateChanged += dataGridView_CurrentCellDirtyStateChanged;
-        }
-
-
-        private void ChangeRecordsByDate()
-        {
-            //records.Clear();
-            //if (dateTimePicker.Value.Date > dateTimePickerEnd.Value.Date)
-            //{
-            //    MessageBox.Show("開始日期不能大於結束日期", "系統通知");
-            //    return;
-            //}
-            //TimeSpan timeSpan = dateTimePickerEnd.Value - dateTimePicker.Value;
-            ////dateTimePicker.Value.AddDays(timeSpan.Days);
-            //for (int i = 0; i <= timeSpan.Days; i++)
-            //{
-            //    string date = dateTimePicker.Value.AddDays(i).ToString("yyyy-MM-dd");
-            //    string FilePath = ConfigurationManager.AppSettings["FilePath"];
-            //    string path = Path.Combine(FilePath, $"{date}\\record.csv");
-            //    if (!File.Exists(path))
-            //    {
-            //        continue;
-            //    }
-            //    List<RecordModel> recordByDay = CSV_Library.CSVHelper.Read<RecordModel>(path);
-            //    records.AddRange(recordByDay);
-            //}
         }
 
     }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using 記帳APP.Models;
+using 記帳APP.Repository.Entities;
 
 namespace 記帳APP.Repository
 {
@@ -17,27 +18,28 @@ namespace 記帳APP.Repository
         {
             FilePath = ConfigurationManager.AppSettings["FilePath"];
         }
-        public List<RecordModel> Delete(RecordModel record)
+        public void Delete(RecordEntity record)
         {
-            List<RecordModel> records = GetDatas(DateTime.Parse(record.Date));
+            List<RecordEntity> records = GetDatas(DateTime.Parse(record.Date));
             records.RemoveAll(x => x.Img1 == record.Img1);
             File.Delete(record.Img1);
+            File.Delete(record.Img1.Replace("40x40", ""));
             File.Delete(record.Img2);
+            File.Delete(record.Img2.Replace("40x40", ""));
             string path = Path.Combine(FilePath, record.Date, "record.csv");
             File.Delete(path);
-            CSV_Library.CSVHelper.Write<List<RecordModel>>(path, records);
-            return records;
+            CSV_Library.CSVHelper.Write<RecordEntity>(path, records);
         }
 
-        public List<RecordModel> GetDatas(DateTime date)
+        public List<RecordEntity> GetDatas(DateTime date)
         {
             string path = Path.Combine(FilePath, date.ToString("yyyy-MM-dd"), "record.csv");
-            return CSV_Library.CSVHelper.Read<RecordModel>(path);
+            return CSV_Library.CSVHelper.Read<RecordEntity>(path);
         }
 
-        public List<RecordModel> GetDatas(DateTime start, DateTime end)
+        public List<RecordEntity> GetDatas(DateTime start, DateTime end)
         {
-            List<RecordModel> records = new List<RecordModel>();
+            List<RecordEntity> records = new List<RecordEntity>();
             TimeSpan timeSpan = end - start;
             for (int i = 0; i <= timeSpan.Days; i++)
             {
@@ -47,29 +49,29 @@ namespace 記帳APP.Repository
                 {
                     continue;
                 }
-                List<RecordModel> recordByDay = CSV_Library.CSVHelper.Read<RecordModel>(path);
+                List<RecordEntity> recordByDay = CSV_Library.CSVHelper.Read<RecordEntity>(path);
                 records.AddRange(recordByDay);
             }
             return records;
         }
 
-        public void Insert(RecordModel record)
+        public void Insert(RecordEntity record)
         {
             string folder = Path.Combine(FilePath, record.Date);
             Directory.CreateDirectory(folder);
             string path = Path.Combine(folder, "record.csv");
-            CSV_Library.CSVHelper.Write<RecordModel>(path, record);
+            CSV_Library.CSVHelper.Write<RecordEntity>(path, record);
         }
 
-        public void Update(RecordModel record)
+        public void Update(RecordEntity record)
         {
-            List<RecordModel> records = GetDatas(DateTime.Parse(record.Date));
+            List<RecordEntity> records = GetDatas(DateTime.Parse(record.Date));
             int index = records.FindIndex(x => x.Img1 == record.Img1);
             records.RemoveAll(x => x.Img1 == record.Img1);
             records.Insert(index, record);
             string path = Path.Combine(FilePath, record.Date, "record.csv");
             File.Delete(path);
-            CSV_Library.CSVHelper.Write<List<RecordModel>>(path, records);
+            CSV_Library.CSVHelper.Write<RecordEntity>(path, records);
         }
     }
 }

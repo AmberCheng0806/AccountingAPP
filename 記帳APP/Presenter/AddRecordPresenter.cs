@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using 記帳APP.Models;
 using 記帳APP.Models.DTOs;
 using 記帳APP.Repository;
+using 記帳APP.Repository.Entities;
 using 記帳APP.Util;
 using static 記帳APP.Contract.AddRecordContract;
 namespace 記帳APP.Presenter
@@ -29,16 +30,9 @@ namespace 記帳APP.Presenter
             record = new RecordRepository();
         }
 
-        public void AddRecord(RecordDto recordDto)
+        public void AddRecord(RecordDTO recordDto)
         {
-            //var config = new MapperConfiguration(cfg =>
-            //    cfg.CreateMap<RecordDto, RecordModel>()
-            //.ForMember(x => x.Img1, y => y.MapFrom(o => o.imgPath1))
-            //.ForMember(x => x.Img2, y => y.MapFrom(o => o.imgPath2))
-            //);
-            //var mapper = config.CreateMapper();
-            //RecordModel model = mapper.Map<RecordModel>(recordDto);
-            RecordModel model = Util.Mapper.Map<RecordDto, RecordModel>(recordDto, x =>
+            RecordEntity model = Util.Mapper.Map<RecordDTO, RecordEntity>(recordDto, x =>
             {
                 x.ForMember(z => z.Img1, y => y.MapFrom(o => o.imgPath1));
                 x.ForMember(z => z.Img2, y => y.MapFrom(o => o.imgPath2));
@@ -66,7 +60,7 @@ namespace 記帳APP.Presenter
             var details = data.GetDetails(types[0]);
             var people = data.GetPeople();
             var pay = data.GetPayMethods();
-            addRecordView.ComboboxResponse(new DataDto(types, details, people, pay));
+            addRecordView.ComboboxResponse(new DataDTO(types, details, people, pay));
         }
 
         public void GetDetailResponse(string type)
