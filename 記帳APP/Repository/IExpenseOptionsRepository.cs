@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace 記帳APP.Repository
 {
-    internal interface IDataRepository
+    internal interface IExpenseOptionsRepository
     {
+        Dictionary<string, List<string>> GetExpenseCategoryMap();
         List<string> GetTypes();
         List<string> GetDetails(string type);
         List<string> GetPeople();

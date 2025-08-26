@@ -20,13 +20,13 @@ namespace 記帳APP.Presenter
     internal class AddRecordPresenter : IAddRecordPresenter
     {
         private IAddRecordView addRecordView;
-        private IDataRepository data;
+        private IExpenseOptionsRepository data;
         private IRecordRepository record;
 
         public AddRecordPresenter(IAddRecordView view)
         {
             addRecordView = view;
-            data = new DataRepository();
+            data = new ExpenseOptionsRepository();
             record = new RecordRepository();
         }
 

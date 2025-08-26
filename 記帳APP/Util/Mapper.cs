@@ -46,8 +46,8 @@ namespace 記帳APP.Util
 
         private static void Test()
         {
-            List<DataModel> list = new List<DataModel>();
-            var temp = Mapper.Map<DataModel, DataDTO>(list);
+            List<ExpenseOptions> list = new List<ExpenseOptions>();
+            var temp = Mapper.Map<ExpenseOptions, DataDTO>(list);
         }
 
         public static T2 Map<T1, T2>(T1 source, Action<IMappingExpression<T1, T2>> action = null)

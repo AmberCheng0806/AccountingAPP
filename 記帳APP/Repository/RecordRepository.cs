@@ -55,6 +55,7 @@ namespace 記帳APP.Repository
             return records;
         }
 
+
         public void Insert(RecordEntity record)
         {
             string folder = Path.Combine(FilePath, record.Date);

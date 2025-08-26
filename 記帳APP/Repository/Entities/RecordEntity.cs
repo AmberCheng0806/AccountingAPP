@@ -12,10 +12,13 @@ namespace 記帳APP.Repository.Entities
     {
         public string Date { get; set; }
         public string Money { get; set; }
+        [Record("類型")]
         public string Type { get; set; }
+        [Record("對象")]
         public string People { get; set; }
+        [Record("付款方式")]
         public string Pay { get; set; }
-
+        [Record("類型細項")]
         public string Detail { get; set; }
 
         public string Img1 { get; set; }

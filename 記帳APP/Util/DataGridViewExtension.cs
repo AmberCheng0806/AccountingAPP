@@ -20,7 +20,7 @@ namespace 記帳APP.Util
                 Name = prop.Name + "Combo",
                 Tag = prop.Name,
                 DataSource = prop.Name == "Detail" ?
-                null : typeof(DataModel).GetField(prop.Name, BindingFlags.Public | BindingFlags.Static).GetValue(null)
+                null : typeof(ExpenseOptions).GetField(prop.Name, BindingFlags.Public | BindingFlags.Static).GetValue(null)
             };
             int index = dataGridView.Columns[prop.Name].Index;
             dataGridView.Columns.Insert(index, ComboBoxColumn);

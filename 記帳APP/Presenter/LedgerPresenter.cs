@@ -15,12 +15,12 @@ namespace 記帳APP.Presenter
     internal class LedgerPresenter : ILedgerPresenter
     {
         private ILedgerView view;
-        private IDataRepository data;
+        private IExpenseOptionsRepository data;
         private IRecordRepository record;
         public LedgerPresenter(ILedgerView view)
         {
             this.view = view;
-            data = new DataRepository();
+            data = new ExpenseOptionsRepository();
             record = new RecordRepository();
         }
 
