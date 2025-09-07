@@ -45,6 +45,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,6 +69,7 @@
     </Compile>
     <Compile Include="Contract\AddRecordContract.cs" />
     <Compile Include="Contract\AnalysisContract.cs" />
+    <Compile Include="Contract\ChartContract.cs" />
     <Compile Include="Contract\LedgerContract.cs" />
     <Compile Include="Forms\FormType.cs" />
     <Compile Include="Forms\ImgForm.cs">
@@ -101,14 +103,19 @@
     <Compile Include="Forms\記帳本.Designer.cs">
       <DependentUpon>記帳本.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\ComboBoxModel.cs" />
     <Compile Include="Models\DTOs\AnalysisDataDTO.cs" />
     <Compile Include="Models\DTOs\AnalysisDTO.cs" />
+    <Compile Include="Models\DTOs\LineChartDataDTO.cs" />
+    <Compile Include="Models\DTOs\PieChartDataDTO.cs" />
+    <Compile Include="Models\DTOs\StackedColumnChartDTO.cs" />
     <Compile Include="Models\ExpenseOptions.cs" />
     <Compile Include="Models\DTOs\DataDTO.cs" />
     <Compile Include="Models\DTOs\RecordDTO.cs" />
     <Compile Include="Models\RecordModel.cs" />
     <Compile Include="Presenter\AddRecordPresenter.cs" />
     <Compile Include="Presenter\AnalysisPresenter.cs" />
+    <Compile Include="Presenter\ChartPresenter.cs" />
     <Compile Include="Presenter\LedgerPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -117,6 +124,7 @@
     <Compile Include="Repository\IExpenseOptionsRepository.cs" />
     <Compile Include="Repository\IRecordRepository.cs" />
     <Compile Include="Repository\RecordRepository.cs" />
+    <Compile Include="Service\DataAnalysisService.cs" />
     <Compile Include="Util\DataGridViewExtension.cs" />
     <Compile Include="Util\Extension.cs" />
     <Compile Include="Util\FlowLayoutPanelExtension.cs" />

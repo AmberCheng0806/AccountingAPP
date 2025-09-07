@@ -18,7 +18,7 @@ namespace 記帳APP
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //TODO: 希望只有預設的 Form 也就是 Application.Run 不能被Close 其他可以使用Close 而不是Hide
-            Form form = SingletonFormFactory.GetForm(FormType.記一筆);
+            Form form = SingletonFormFactory.GetForm(FormType.圖表分析);
             Application.Run(form);
         }
     }
