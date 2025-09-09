@@ -34,8 +34,8 @@
             this.searchBtn = new System.Windows.Forms.Button();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
             this.userControl11 = new 記帳APP.Components.Navbar();
+            this.numberBox = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -85,13 +85,6 @@
             this.comboBox1.TabIndex = 17;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
-            // flowLayoutPanel3
-            // 
-            this.flowLayoutPanel3.Location = new System.Drawing.Point(809, 15);
-            this.flowLayoutPanel3.Name = "flowLayoutPanel3";
-            this.flowLayoutPanel3.Size = new System.Drawing.Size(182, 30);
-            this.flowLayoutPanel3.TabIndex = 18;
-            // 
             // userControl11
             // 
             this.userControl11.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -100,12 +93,22 @@
             this.userControl11.Size = new System.Drawing.Size(1221, 102);
             this.userControl11.TabIndex = 1;
             // 
+            // numberBox
+            // 
+            this.numberBox.FormattingEnabled = true;
+            this.numberBox.Location = new System.Drawing.Point(814, 15);
+            this.numberBox.Name = "numberBox";
+            this.numberBox.Size = new System.Drawing.Size(176, 26);
+            this.numberBox.TabIndex = 18;
+            this.numberBox.Visible = false;
+            this.numberBox.SelectedIndexChanged += new System.EventHandler(this.numberBox_SelectedIndexChanged);
+            // 
             // 圖表分析
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1221, 808);
-            this.Controls.Add(this.flowLayoutPanel3);
+            this.Controls.Add(this.numberBox);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Controls.Add(this.flowLayoutPanel1);
@@ -130,6 +133,6 @@
         private System.Windows.Forms.Button searchBtn;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
+        private System.Windows.Forms.ComboBox numberBox;
     }
 }

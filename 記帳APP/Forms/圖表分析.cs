@@ -27,19 +27,12 @@ namespace 記帳APP.Forms
         private IChartPresenter chartPresenter;
         Dictionary<string, List<string>> keyValuePairs = new Dictionary<string, List<string>>();
         List<string> groupByList = new List<string>();
-        List<string> dropDownSelections = new List<string>() { "Pie", "Line", "StackedColumn" };
-        List<ComboBoxModel> numberSelections = new List<ComboBoxModel>()
-        {
-            new ComboBoxModel("當月資料",1),
-            new ComboBoxModel("與上個月相比",2),
-            new ComboBoxModel("與兩個月前相比",3)
-        };
         public 圖表分析()
         {
             InitializeComponent();
             chartPresenter = new ChartPresenter(this);
             chartPresenter.GetExpenseOptions();
-            comboBox1.DataSource = dropDownSelections;
+            chartPresenter.GetComboboxData();
 
         }
         public void CheckBoxesResponse(AnalysisDTO analysisDTO)
@@ -88,24 +81,6 @@ namespace 記帳APP.Forms
             Reset();
         }
 
-        public void RenderChartData(Object obj)
-        {
-            if (obj is PieChartDataDTO pie)
-            {
-                RenderPieChart(pie.Key, pie.Money);
-                return;
-            }
-            if (obj is LineChartDataDTO line)
-            {
-                RendeLineChart(line.Date, line.MoneyListForMonth);
-                return;
-            }
-            if (obj is StackedColumnChartDTO stack)
-            {
-                RenderStackChart(stack.Date, stack.YDatas, stack.totalPerDate, stack.Names);
-            }
-        }
-
 
         private void 圖表分析_Load(object sender, EventArgs e)
         {
@@ -115,194 +90,45 @@ namespace 記帳APP.Forms
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             Reset();
-            if (comboBox1.Text != "Line")
+            if (comboBox1.Text == "Line")
             {
-                flowLayoutPanel3.Controls.Clear();
+                numberBox.Visible = true;
             }
         }
 
         private void Reset()
         {
             flowLayoutPanel2.Controls.Clear();
-            if (comboBox1.Text == "Line")
+            if (comboBox1.Text != "Line")
             {
-                ComboBox numberBox = new ComboBox();
-                numberBox.DataSource = numberSelections;
-                numberBox.DisplayMember = "Key";
-                numberBox.ValueMember = "Value";
-                flowLayoutPanel3.Controls.Add(numberBox);
-                numberBox.SelectedValueChanged += numberBox_SelectedIndexChanged;
-                chartPresenter.GetChartData(dateTimePicker.Value.Date, dateTimePickerEnd.Value.Date, groupByList, keyValuePairs, comboBox1.Text, (int)numberBox.SelectedValue);
-                return;
+                numberBox.Visible = false;
             }
-            chartPresenter.GetChartData(dateTimePicker.Value.Date, dateTimePickerEnd.Value.Date, groupByList, keyValuePairs, comboBox1.Text, 1);
+            chartPresenter.GetChartData(dateTimePicker.Value.Date, dateTimePickerEnd.Value.Date, groupByList, keyValuePairs, comboBox1.Text, flowLayoutPanel1.Width, flowLayoutPanel1.Height, 1);
         }
 
         private void numberBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox comboBox = (ComboBox)sender;
-            flowLayoutPanel2.Controls.Clear();
-            chartPresenter.GetChartData(dateTimePicker.Value.Date, dateTimePickerEnd.Value.Date, groupByList, keyValuePairs, comboBox1.Text, (int)comboBox.SelectedValue);
-        }
-
-
-        private void RenderPieChart(List<string> X, List<string> Y)
-        {
-            flowLayoutPanel2.Controls.Clear();
-            Chart chart = new Chart();
-            chart.Width = flowLayoutPanel1.Width;
-            chart.Height = flowLayoutPanel1.Height;
-
-            // 圖表區域
-            ChartArea chartArea = new ChartArea();
-            chart.ChartAreas.Add(chartArea);
-
-            //// 建立系列 
-            ChartSeriesSetting(chart, X, Y);
-
-            // 圖例 (Legend)
-            Legend legend = new Legend();
-            legend.Name = "legend1";
-            legend.Docking = Docking.Top;
-            chart.Legends.Add(legend);
-            chart.ChartAreas[0].AxisX.LabelStyle.Interval = 1;  // 每一個都顯示
-            chart.ChartAreas[0].AxisX.LabelStyle.IsStaggered = true; // 交錯顯示，避免重疊
-            flowLayoutPanel2.Controls.Add(chart);
-            chart.Dock = DockStyle.Bottom;
-        }
-
-        private void RendeLineChart(List<string> X, List<Dictionary<string, List<string>>> Y)
-        {
-            flowLayoutPanel2.Controls.Clear();
-            Chart chart = new Chart();
-            chart.Width = flowLayoutPanel1.Width;
-            chart.Height = flowLayoutPanel1.Height;
-
-            // 圖表區域
-            ChartArea chartArea = new ChartArea();
-            chart.ChartAreas.Add(chartArea);
-
-            //// 建立系列 
-            int count = Y.Count;
-            for (int i = 0; i < count; i++)
+            if (comboBox.SelectedValue is int month)
             {
-                ChartSeriesSetting(chart, X, Y[i].Values.ToList().First(), Y[i].Keys.ToList().First());
+                flowLayoutPanel2.Controls.Clear();
+                chartPresenter.GetChartData(dateTimePicker.Value.Date, dateTimePickerEnd.Value.Date, groupByList, keyValuePairs, comboBox1.Text, flowLayoutPanel1.Width, flowLayoutPanel1.Height, month);
             }
-
-            // 圖例 (Legend)
-            Legend legend = new Legend();
-            legend.Name = "legend1";
-            legend.Docking = Docking.Top;
-            chart.Legends.Add(legend);
-            chart.ChartAreas[0].AxisX.LabelStyle.Interval = 1;  // 每一個都顯示
-            chart.ChartAreas[0].AxisX.LabelStyle.IsStaggered = true; // 交錯顯示，避免重疊
-            flowLayoutPanel2.Controls.Add(chart);
-            chart.Dock = DockStyle.Bottom;
         }
 
-        private void RenderStackChart(List<string> X, List<Dictionary<string, string>> Y, List<string> totalPerDay, List<string> names)
+        //建造者模式
+        public void RenderChartData(Chart chart)
         {
             flowLayoutPanel2.Controls.Clear();
-            Chart chart = new Chart();
-            chart.Width = flowLayoutPanel1.Width;
-            chart.Height = flowLayoutPanel1.Height;
-
-            // 圖表區域
-            ChartArea chartArea = new ChartArea();
-            chart.ChartAreas.Add(chartArea);
-
-            // series
-            foreach (string name in names)
-            {
-                List<string> yValues = new List<string>();
-                foreach (var dic in Y)
-                {
-                    string value = dic[name];
-                    yValues.Add(value);
-                }
-                ChartSeriesSetting(chart, X, yValues, totalPerDay, name);
-            }
-
-            // 圖例 (Legend)
-            Legend legend = new Legend();
-            legend.Name = "legend1";
-            legend.Docking = Docking.Top;
-            chart.Legends.Add(legend);
-            chart.ChartAreas[0].AxisX.LabelStyle.Interval = 1;  // 每一個都顯示
-            chart.ChartAreas[0].AxisX.LabelStyle.IsStaggered = true; // 交錯顯示，避免重疊
             flowLayoutPanel2.Controls.Add(chart);
-            chart.Dock = DockStyle.Bottom;
-
         }
 
-        private void ChartSeriesSetting(Chart chart, List<string> X, List<string> Y, string name)
+        public void InitializeComboBox(ChartComboBoxModel chartComboBoxModel)
         {
-            Series series = new Series();
-            series.ChartType = SeriesChartType.Line;
-            series.XValueType = ChartValueType.String;
-            X = X.Select(x => x.Remove(0, 5)).ToList();
-            series.Points.DataBindXY(X, Y);
-
-
-            series.Label = "#VAL";
-            // Tooltip 
-            series.ToolTip = "#VALX: #VAL 元";
-
-
-            // 圖例 (Legend)
-            series.LegendText = numberSelections[int.Parse(name)].Key;
-            series.Legend = "legend1";
-            // 加入到圖表
-            chart.Series.Add(series);
-        }
-
-
-        private void ChartSeriesSetting(Chart chart, List<string> X, List<string> Y, List<string> totalPerDay, string name)
-        {
-            Series series = new Series();
-            series.ChartType = SeriesChartType.StackedColumn100;
-            series.XValueType = ChartValueType.String;
-            X = X.Select(x => x.Remove(0, 5)).ToList();
-            series.Points.DataBindXY(X, Y);
-
-            int count = series.Points.Count;
-            for (int i = 0; i < count; i++)
-            {
-                double value = int.Parse(Y[i]);
-                double percent = (value / int.Parse(totalPerDay[i])) * 100;
-                string percentStr = percent.ToString("F2") + "%";
-                series.Points[i].Label = percentStr; // int => D2 00 01 02 , D3 001 002 003
-                // Tooltip 
-                series.Points[i].ToolTip = $"#VALX: #VAL 元 ({percentStr})";
-            }
-
-            // 圖例 (Legend)
-            series.LegendText = name;
-            series.Legend = "legend1";
-            // 加入到圖表
-            chart.Series.Add(series);
-
-        }
-
-        private void ChartSeriesSetting(Chart chart, List<string> X, List<string> Y)
-        {
-            Series series = new Series();
-            series.ChartType = SeriesChartType.Pie;
-            series.XValueType = ChartValueType.String;
-            // 顯示數值在圓餅圖上
-            series.IsValueShownAsLabel = true;
-            series.Points.DataBindXY(X, Y);
-            // 顯示名稱 + 數值 + 百分比
-
-            series.Label = "#VAL (#PERCENT{P2})";
-            // Tooltip (滑鼠移到扇區顯示提示)
-            series.ToolTip = "#VALX: #VAL 元 (#PERCENT{P2})";
-
-            // 圖例 (Legend)
-            series.LegendText = "#VALX";
-            series.Legend = "legend1";
-            // 加入到圖表
-            chart.Series.Add(series);
+            comboBox1.DataSource = chartComboBoxModel.dropDownSelections;
+            numberBox.DataSource = chartComboBoxModel.numberSelections;
+            numberBox.DisplayMember = "Key";
+            numberBox.ValueMember = "Value";
         }
     }
 }

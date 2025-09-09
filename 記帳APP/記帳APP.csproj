@@ -57,10 +57,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\ChartTypeAttribute.cs" />
     <Compile Include="Attributes\ComboBoxColumnAttribute.cs" />
     <Compile Include="Attributes\ImgColumnAttribute.cs" />
     <Compile Include="Attributes\OrderAttribute.cs" />
     <Compile Include="Attributes\RecordAttribute.cs" />
+    <Compile Include="Builders\ChartBuilder.cs" />
+    <Compile Include="Builders\ColumnChartBuilder.cs" />
+    <Compile Include="Builders\LineChartBuilder.cs" />
+    <Compile Include="Builders\PieChartBuilder.cs" />
+    <Compile Include="Builders\StackedColumnChartBuilder.cs" />
     <Compile Include="Components\Navbar.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -103,12 +109,10 @@
     <Compile Include="Forms\記帳本.Designer.cs">
       <DependentUpon>記帳本.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\ChartComboBoxModel.cs" />
     <Compile Include="Models\ComboBoxModel.cs" />
     <Compile Include="Models\DTOs\AnalysisDataDTO.cs" />
     <Compile Include="Models\DTOs\AnalysisDTO.cs" />
-    <Compile Include="Models\DTOs\LineChartDataDTO.cs" />
-    <Compile Include="Models\DTOs\PieChartDataDTO.cs" />
-    <Compile Include="Models\DTOs\StackedColumnChartDTO.cs" />
     <Compile Include="Models\ExpenseOptions.cs" />
     <Compile Include="Models\DTOs\DataDTO.cs" />
     <Compile Include="Models\DTOs\RecordDTO.cs" />
@@ -126,6 +130,7 @@
     <Compile Include="Repository\RecordRepository.cs" />
     <Compile Include="Service\DataAnalysisService.cs" />
     <Compile Include="Util\DataGridViewExtension.cs" />
+    <Compile Include="Util\DateUtil.cs" />
     <Compile Include="Util\Extension.cs" />
     <Compile Include="Util\FlowLayoutPanelExtension.cs" />
     <Compile Include="Util\ImgCompress.cs" />

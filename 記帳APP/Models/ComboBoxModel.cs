@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace 記帳APP.Models
 {
-    internal class ComboBoxModel
+    public class ComboBoxModel
     {
         public string Key { get; set; }
         public int Value { get; set; }
